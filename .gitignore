@@ -1,0 +1,4 @@
+BACKING_STORE.bin
+venv/
+env/
+.idea/
