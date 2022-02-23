@@ -6,31 +6,27 @@
 import sys
 
 frame_number = int(sys.argv[1])
-tlb = [[None] * 2] * 16
+tlb = []
 pt = [[None] * 2] * 256
 physical_memory = [None] * frame_number
 fn = 0
 physical_memory_size = 0
-tlb_counter = 0
-
+lru_queue = []
 
 #NOW START POPULATING
 #FN goes from 0 -> 256
 #PN is Entry // 256
 
 
-import codecs
-
-
 
 def map_virtual_memory(value, alg):
-    global tlb_counter
     global pt
     global tlb
     global physical_memory
     global fn
     global physical_memory_size
     global frame_number
+    global lru_queue
 
     #START POPULATING HERE
 
@@ -40,44 +36,71 @@ def map_virtual_memory(value, alg):
         if tlb_val[0] == pn:
             evicted_value = tlb.pop(index)
             tlb.append(evicted_value)
+            if alg == "LRU":
+                import pdb; pdb.set_trace()
+                hit_frame = tlb_val[1]
+                index_hit_frame = lru_queue.index(hit_frame) #tlb_val[1] is the frame we need to change the priority
+                lru_queue.pop(index_hit_frame)
+                lru_queue.append(hit_frame)
             return False, False, tlb_val[1]
 
 
     #FIFO/LRU hybrid to maintain TLB
-    if tlb_counter < 16:
-        tlb[tlb_counter] = [pn,fn]
+    if len(tlb) < 16:
+        tlb.append([pn,fn])
     else:
         tlb.pop(0)
         tlb.append([pn,fn])
 
-    tlb_counter = tlb_counter + 1
 
 
     #misses in tlb so now goes into pt
     if pt[pn][1] == 1: #soft_miss only but found in PT
+        if alg == "LRU":
+            hit_frame = pt[pn][0]
+            index_hit_frame = lru_queue.index(hit_frame)  # tlb_val[1] is the frame we need to change the priority
+            lru_queue.pop(index_hit_frame)
+            lru_queue.append(hit_frame)
         return True, False, pt[pn][0]
     else: #hard misses
         if physical_memory_size < frame_number:
             physical_memory[fn] = pn
+            if alg == "LRU":
+                lru_queue.append(fn)
+            pt[pn] = [fn,1]
+            fn = fn % frame_number
+            fn = fn + 1
+            physical_memory_size += 1
+            return True, True, fn - 1
         else:
             #pick an evicting victim
             if alg == "FIFO":
-                pn_evicted = physical_memory.pop(0)
+                frame_evicted = fn % frame_number
+                pn_evicted = physical_memory[frame_evicted]
                 pt[pn_evicted][1] = 0
-                physical_memory.append(pn)
+                physical_memory[frame_evicted] = pn
+                pt[pn] = [frame_evicted, 1]
+                fn = fn % frame_number
+                fn = fn + 1
+                return True, True, frame_evicted
             elif alg == "LRU":
                 #Looks for least recently used and replace that one
+                frame_evicted = lru_queue.pop(0) #whatever in front of the queue is the least recently used
+                pn_evicted = physical_memory[frame_evicted] #access the pn in that frame
+                pt[pn_evicted][1] = 0 #change the valid bit to 0
+                physical_memory[frame_evicted] = pn #replace that frame with a new pn
+                lru_queue.append(frame_evicted) #move that to the back of the queue
+                pt[pn] = [frame_evicted,1]
+                return True, True, frame_evicted
                 pass
             elif alg == "OPT":
                 #Looks into the future starting from the miss and see which ones will be least used farthest from now and evict that one
                 pass
-        physical_memory_size += 1
 
 
-    #populate pt now
-    pt[pn] = [fn,1]
-    fn = (fn % frame_number)
-    fn = fn + 1
+
+
+
 
     return True, True, fn - 1
 
