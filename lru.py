@@ -55,9 +55,9 @@ class LRUMem(BaseVirtualMem):
 
         #hard misses
         foundFrame = self.fn % self.frame_number
+
         if len(self.physical_memory) < self.frame_number:
             self.physical_memory.append(pn)
-            self.pt[pn] = [foundFrame,1]
             self.lru_queue.append(foundFrame)
         else:
             #pick a victim based on least recently used
@@ -66,8 +66,11 @@ class LRUMem(BaseVirtualMem):
             pn_evicted = self.physical_memory[foundFrame]
 
             self.pt[pn_evicted] = [self.pt[pn_evicted][0] , 0] #change old pn to invalid bit
+            self.updateTlb(pn_evicted, pn) #modify tlb table
             self.physical_memory[foundFrame] = pn
 
 
         self.fn = foundFrame + 1
+        self.pt[pn] = [foundFrame, 1]
+
         return True, True, foundFrame

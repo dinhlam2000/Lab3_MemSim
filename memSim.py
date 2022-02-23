@@ -6,6 +6,7 @@
 import sys
 from fifo import FifoMem
 from lru import LRUMem
+from opt import OPTMem
 
 # frame_number = int(sys.argv[1])
 # tlb = [[None] * 2] * 16
@@ -100,6 +101,8 @@ if __name__ == '__main__':
     #Content = fileContent[FullAddress // 256 * 256 : (FullAddress // 256 + 1) * 256]
     #IS TLB MISSES >= PAGE FAULT
 
+    # test = {1 : -1, 2: -1, 3: 0, 4 : 1}
+    # import pdb; pdb.set_trace()
 
     with open("addresses.txt", "r") as file2:
         entries = file2.read()
@@ -116,6 +119,9 @@ if __name__ == '__main__':
             virtual_mem = FifoMem(frame_number,entries, fileContent)
         elif replacement_algorithm == 'LRU':
             virtual_mem = LRUMem(frame_number, entries, fileContent)
+        elif replacement_algorithm == 'OPT':
+            virtual_mem = OPTMem(frame_number, entries, fileContent)
+
 
         output = virtual_mem.map_virtual_memory()
 

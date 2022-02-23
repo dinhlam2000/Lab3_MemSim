@@ -13,7 +13,7 @@ class BaseVirtualMem:
                 self.tlb.append(evicted_value)
                 return True, tlb_val[1]
 
-        if len(self.tlb) < 16:
+        if len(self.tlb) < self.frame_number:
             self.tlb.append([pn,fn])
         else:
             self.tlb.pop(0)
@@ -28,3 +28,8 @@ class BaseVirtualMem:
 
         return False, -1
 
+    def updateTlb(self, oldPn, newPn, foundFrame):
+        for index, tlb_val in enumerate(self.tlb):
+            if tlb_val[0] == oldPn:
+                self.tlb.pop(index)
+                self.tlb.append([newPn, foundFrame])
