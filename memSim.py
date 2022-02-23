@@ -4,6 +4,8 @@
 
 
 import sys
+from fifo import FifoMem
+from lru import LRUMem
 
 frame_number = int(sys.argv[1])
 tlb = [[None] * 2] * 16
@@ -104,47 +106,37 @@ if __name__ == '__main__':
         entries = entries.split('\n')
 
 
-    page_fault = 0
-    tlb_fault = 0
-
+    frame_number = int(sys.argv[1])
     replacement_algorithm = sys.argv[2]
-    output = ""
 
-    import pdb; pdb.set_trace()
+    virtual_mem = FifoMem(frame_number, entries, fileContent)
+
     with open("output.txt", 'w') as file3:
-        for value in entries:
-            soft_miss , hard_miss, found_frame = map_virtual_memory(int(value), replacement_algorithm)
-            if soft_miss:
-                tlb_fault += 1
-            if hard_miss:
-                page_fault += 1
+        if replacement_algorithm == 'FIFO':
+            virtual_mem = FifoMem(frame_number,entries, fileContent)
+        elif replacement_algorithm == 'LRU':
+            virtual_mem = LRUMem(frame_number, entries, fileContent)
 
-            output = output + "{0}, {1}, {2}\n".format(value,fileContent[int(value)], str(found_frame))
-            byte = fileContent[int(value)]
-            if byte > 127:
-                byte = byte - 256
-            file3.write("{0}, {1}, {2}\n".format(value,byte, str(found_frame)))
-            page_number = int(value) // 256
+        output = virtual_mem.map_virtual_memory()
 
-            content = fileContent[page_number * 256 : (page_number + 1) * 256]
-            content = content.hex()
-            # content = "".join(list(map(lambda x: x if x != "\\" else "", content)))
-            # content = content.replace('x', '')
-            # content = content.replace('\\', '')
-            # content = content.replace()
-            file3.write(str(content) + "\n")
-            output = output + str(fileContent[page_number * 256 : (page_number + 1) * 256])
+        for value in output:
+
+
+
+            file3.write("{0}, {1}, {2}\n".format(value[0],value[1], value[2]))
+
+            file3.write(value[3] + "\n")
         file3.write("Number of Translated Addresses = {0}".format(str(len(entries))))
         file3.write("\n")
-        file3.write("Page Faults = {0}".format(str(page_fault)))
+        file3.write("Page Faults = {0}".format(str(virtual_mem.page_fault)))
         file3.write("\n")
-        file3.write("Page Fault Rate = {0}".format(str(page_fault / len(entries))))
+        file3.write("Page Fault Rate = {0}".format(str(virtual_mem.page_fault / len(entries))))
         file3.write("\n")
-        file3.write("TLB Hits = {0}".format(str(len(entries) - tlb_fault)))
+        file3.write("TLB Hits = {0}".format(str(len(entries) - virtual_mem.tlb_fault)))
         file3.write("\n")
-        file3.write("TLB Misses = {0}".format(str(tlb_fault)))
+        file3.write("TLB Misses = {0}".format(str(virtual_mem.tlb_fault)))
         file3.write("\n")
-        file3.write("TLB Hit Rate = {0}".format(str(1 - tlb_fault / len(entries))))
+        file3.write("TLB Hit Rate = {0}".format(str(1 - virtual_mem.tlb_fault / len(entries))))
 
 
 
