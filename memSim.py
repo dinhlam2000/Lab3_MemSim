@@ -7,13 +7,13 @@ import sys
 from fifo import FifoMem
 from lru import LRUMem
 
-frame_number = int(sys.argv[1])
-tlb = [[None] * 2] * 16
-pt = [[None] * 2] * 256
-physical_memory = [None] * frame_number
-fn = 0
-physical_memory_size = 0
-tlb_counter = 0
+# frame_number = int(sys.argv[1])
+# tlb = [[None] * 2] * 16
+# pt = [[None] * 2] * 256
+# physical_memory = [None] * frame_number
+# fn = 0
+# physical_memory_size = 0
+# tlb_counter = 0
 
 
 #NOW START POPULATING
@@ -25,63 +25,63 @@ import codecs
 
 
 
-def map_virtual_memory(value, alg):
-    global tlb_counter
-    global pt
-    global tlb
-    global physical_memory
-    global fn
-    global physical_memory_size
-    global frame_number
-
-    #START POPULATING HERE
-
-    pn = value // 256
-    for index, tlb_val in enumerate(tlb):
-        #hit in TLB
-        if tlb_val[0] == pn:
-            evicted_value = tlb.pop(index)
-            tlb.append(evicted_value)
-            return False, False, tlb_val[1]
-
-
-    #FIFO/LRU hybrid to maintain TLB
-    if tlb_counter < 16:
-        tlb[tlb_counter] = [pn,fn]
-    else:
-        tlb.pop(0)
-        tlb.append([pn,fn])
-
-    tlb_counter = tlb_counter + 1
-
-
-    #misses in tlb so now goes into pt
-    if pt[pn][1] == 1: #soft_miss only but found in PT
-        return True, False, pt[pn][0]
-    else: #hard misses
-        if physical_memory_size < frame_number:
-            physical_memory[fn] = pn
-        else:
-            #pick an evicting victim
-            if alg == "FIFO":
-                pn_evicted = physical_memory.pop(0)
-                pt[pn_evicted][1] = 0
-                physical_memory.append(pn)
-            elif alg == "LRU":
-                #Looks for least recently used and replace that one
-                pass
-            elif alg == "OPT":
-                #Looks into the future starting from the miss and see which ones will be least used farthest from now and evict that one
-                pass
-        physical_memory_size += 1
-
-
-    #populate pt now
-    pt[pn] = [fn,1]
-    fn = (fn % frame_number)
-    fn = fn + 1
-
-    return True, True, fn - 1
+# def map_virtual_memory(value, alg):
+#     global tlb_counter
+#     global pt
+#     global tlb
+#     global physical_memory
+#     global fn
+#     global physical_memory_size
+#     global frame_number
+#
+#     #START POPULATING HERE
+#
+#     pn = value // 256
+#     for index, tlb_val in enumerate(tlb):
+#         #hit in TLB
+#         if tlb_val[0] == pn:
+#             evicted_value = tlb.pop(index)
+#             tlb.append(evicted_value)
+#             return False, False, tlb_val[1]
+#
+#
+#     #FIFO/LRU hybrid to maintain TLB
+#     if tlb_counter < 16:
+#         tlb[tlb_counter] = [pn,fn]
+#     else:
+#         tlb.pop(0)
+#         tlb.append([pn,fn])
+#
+#     tlb_counter = tlb_counter + 1
+#
+#
+#     #misses in tlb so now goes into pt
+#     if pt[pn][1] == 1: #soft_miss only but found in PT
+#         return True, False, pt[pn][0]
+#     else: #hard misses
+#         if physical_memory_size < frame_number:
+#             physical_memory[fn] = pn
+#         else:
+#             #pick an evicting victim
+#             if alg == "FIFO":
+#                 pn_evicted = physical_memory.pop(0)
+#                 pt[pn_evicted][1] = 0
+#                 physical_memory.append(pn)
+#             elif alg == "LRU":
+#                 #Looks for least recently used and replace that one
+#                 pass
+#             elif alg == "OPT":
+#                 #Looks into the future starting from the miss and see which ones will be least used farthest from now and evict that one
+#                 pass
+#         physical_memory_size += 1
+#
+#
+#     #populate pt now
+#     pt[pn] = [fn,1]
+#     fn = (fn % frame_number)
+#     fn = fn + 1
+#
+#     return True, True, fn - 1
 
 
 
