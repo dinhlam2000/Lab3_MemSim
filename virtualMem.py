@@ -34,3 +34,5 @@ class BaseVirtualMem:
                 self.tlb.pop(index)
                 self.tlb.append([newPn, foundFrame])
                 return
+        self.tlb.pop(0)
+        self.tlb.append([newPn, foundFrame])

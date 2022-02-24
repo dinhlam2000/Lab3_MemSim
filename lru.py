@@ -52,6 +52,7 @@ class LRUMem(BaseVirtualMem):
             index_foundFrame = self.lru_queue.index(foundFrame)
             self.lru_queue.pop(index_foundFrame)
             self.lru_queue.append(foundFrame)
+            self.updateTlb(pn,foundFrame)
             return True, False, foundFrame
 
 
@@ -68,7 +69,7 @@ class LRUMem(BaseVirtualMem):
             self.lru_queue.append(foundFrame)
             pn_evicted = self.physical_memory[foundFrame]
             self.pt[pn_evicted] = [self.pt[pn_evicted][0] , 0] #change old pn to invalid bit
-            self.updateTlb(pn,foundFrame)
+            # self.updateTlb(pn,foundFrame)
             self.updateEvictedTlb(pn_evicted, pn, foundFrame) #modify tlb table
             self.physical_memory[foundFrame] = pn
 

@@ -51,6 +51,7 @@ class FifoMem(BaseVirtualMem):
         foundInLookUp, foundFrame = super().seekPt(pn)
         if foundInLookUp == True: #found in PT
             # import pdb; pdb.set_trace()
+            self.updateTlb(pn,foundFrame)
             return True, False, foundFrame
 
 
@@ -65,7 +66,7 @@ class FifoMem(BaseVirtualMem):
             #pick a victim based on first in first out
             pn_evicted = self.physical_memory[foundFrame]
             self.pt[pn_evicted] = [self.pt[pn_evicted][0] , 0] #change old pn to invalid bit
-            self.updateTlb(pn,foundFrame)
+            # self.updateTlb(pn,foundFrame)
             self.updateEvictedTlb(pn_evicted, pn, foundFrame) #modify tlb table
             self.physical_memory[foundFrame] = pn
 

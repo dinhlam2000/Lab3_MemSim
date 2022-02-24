@@ -43,6 +43,7 @@ class OPTMem(BaseVirtualMem):
         #misses in tlb, now look up in pt
         foundInLookUp, foundFrame = super().seekPt(pn)
         if foundInLookUp == True: #found in PT
+            self.updateTlb(pn,foundFrame)
             return True, False, foundFrame
 
         #hard misses
@@ -55,7 +56,7 @@ class OPTMem(BaseVirtualMem):
             foundFrame = self.__futureLookUp(self.addresses[index + 1:])
             pn_evicted = self.physical_memory[foundFrame]
             self.pt[pn_evicted] = [self.pt[pn_evicted][0] , 0] #change old pn to invalid bit
-            self.updateTlb(pn,foundFrame)
+            # self.updateTlb(pn,foundFrame)
             self.updateEvictedTlb(pn_evicted, pn, foundFrame) #modify tlb table
             self.physical_memory[foundFrame] = pn
 
