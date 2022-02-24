@@ -11,6 +11,7 @@ class FifoMem(BaseVirtualMem):
 
     def map_virtual_memory(self):
         output = []
+        # import pdb; pdb.set_trace()
         for address in self.addresses:
             soft_miss, hard_miss, found_frame = self.__mapHelper(int(address))
             if soft_miss:
@@ -36,8 +37,11 @@ class FifoMem(BaseVirtualMem):
         pn = value // 256
 
 
-        # import pdb; pdb.set_trace()
 
+
+        # import pdb; pdb.set_trace()
+        # if value == 1050:
+        #     import pdb; pdb.set_trace()
         foundInLookUp, foundFrame = super().seekTlb(pn, self.fn % self.frame_number)
 
         if foundInLookUp == True: #found in TLB
@@ -46,6 +50,7 @@ class FifoMem(BaseVirtualMem):
         #misses in tlb, now look up in pt
         foundInLookUp, foundFrame = super().seekPt(pn)
         if foundInLookUp == True: #found in PT
+            # import pdb; pdb.set_trace()
             return True, False, foundFrame
 
 

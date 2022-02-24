@@ -45,9 +45,6 @@ class OPTMem(BaseVirtualMem):
         if foundInLookUp == True: #found in PT
             return True, False, foundFrame
 
-        # if value == 1050:
-        #     import pdb; pdb.set_trace()
-
         #hard misses
         foundFrame = self.fn % self.frame_number
         if len(self.physical_memory) < self.frame_number:
@@ -73,6 +70,7 @@ class OPTMem(BaseVirtualMem):
         #initialized everything to be -1 first
         for pn in self.physical_memory:
             pn_referenced[pn] = float('inf')
+
 
 
         counter = 0

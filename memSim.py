@@ -104,7 +104,7 @@ if __name__ == '__main__':
     # test = {1 : -1, 2: -1, 3: 0, 4 : 1}
     # import pdb; pdb.set_trace()
 
-    with open("addresses.txt", "r") as file2:
+    with open("addresses2.txt", "r") as file2:
         entries = file2.read()
         entries = entries.split('\n')
 

@@ -66,7 +66,7 @@ class LRUMem(BaseVirtualMem):
             pn_evicted = self.physical_memory[foundFrame]
 
             self.pt[pn_evicted] = [self.pt[pn_evicted][0] , 0] #change old pn to invalid bit
-            self.updateTlb(pn_evicted, pn) #modify tlb table
+            self.updateTlb(pn_evicted, pn, foundFrame) #modify tlb table
             self.physical_memory[foundFrame] = pn
 
 
