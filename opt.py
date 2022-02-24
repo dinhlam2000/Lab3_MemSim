@@ -34,7 +34,7 @@ class OPTMem(BaseVirtualMem):
         foundFrame = -1
         pn = value // 256
 
-        foundInLookUp, foundFrame = super().seekTlb(pn, self.fn)
+        foundInLookUp, foundFrame = super().seekTlb(pn)
 
         if foundInLookUp == True: #found in TLB
             #modify the lru queue
@@ -49,12 +49,14 @@ class OPTMem(BaseVirtualMem):
         foundFrame = self.fn % self.frame_number
         if len(self.physical_memory) < self.frame_number:
             self.physical_memory.append(pn)
+            self.updateTlb(pn,foundFrame)
         else:
             #pick a victim based on the future
             foundFrame = self.__futureLookUp(self.addresses[index + 1:])
             pn_evicted = self.physical_memory[foundFrame]
             self.pt[pn_evicted] = [self.pt[pn_evicted][0] , 0] #change old pn to invalid bit
-            self.updateTlb(pn_evicted, pn, foundFrame) #modify tlb table
+            self.updateTlb(pn,foundFrame)
+            self.updateEvictedTlb(pn_evicted, pn, foundFrame) #modify tlb table
             self.physical_memory[foundFrame] = pn
 
 

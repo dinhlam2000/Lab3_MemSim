@@ -35,7 +35,9 @@ class LRUMem(BaseVirtualMem):
         foundFrame = -1
         pn = value // 256
 
-        foundInLookUp, foundFrame = super().seekTlb(pn, self.fn)
+        # if value == 45631:
+        #     import pdb; pdb.set_trace()
+        foundInLookUp, foundFrame = super().seekTlb(pn)
 
         if foundInLookUp == True: #found in TLB
             #modify the lru queue
@@ -58,15 +60,16 @@ class LRUMem(BaseVirtualMem):
 
         if len(self.physical_memory) < self.frame_number:
             self.physical_memory.append(pn)
+            self.updateTlb(pn,foundFrame)
             self.lru_queue.append(foundFrame)
         else:
             #pick a victim based on least recently used
             foundFrame = self.lru_queue.pop(0)
             self.lru_queue.append(foundFrame)
             pn_evicted = self.physical_memory[foundFrame]
-
             self.pt[pn_evicted] = [self.pt[pn_evicted][0] , 0] #change old pn to invalid bit
-            self.updateTlb(pn_evicted, pn, foundFrame) #modify tlb table
+            self.updateTlb(pn,foundFrame)
+            self.updateEvictedTlb(pn_evicted, pn, foundFrame) #modify tlb table
             self.physical_memory[foundFrame] = pn
 
 
