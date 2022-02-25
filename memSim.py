@@ -108,14 +108,19 @@ if __name__ == '__main__':
 
     # test = {1 : -1, 2: -1, 3: 0, 4 : 1}
     # import pdb; pdb.set_trace()
-    address_file = sys.argv[3]
+    address_file = sys.argv[1]
     with open(address_file, "r") as file2:
         entries = file2.read()
         entries = entries.split('\n')
 
-
-    frame_number = int(sys.argv[1])
-    replacement_algorithm = sys.argv[2]
+    try:
+        frame_number = int(sys.argv[2])
+    except:
+        frame_number = 256
+    try:
+        replacement_algorithm = sys.argv[3]
+    except:
+        replacement_algorithm = 'FIFO'
 
     virtual_mem = FifoMem(frame_number, entries, fileContent)
 
