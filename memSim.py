@@ -141,14 +141,15 @@ if __name__ == '__main__':
         file3.write("\n")
         file3.write("Page Faults = {0}".format(str(virtual_mem.page_fault)))
         file3.write("\n")
-        file3.write("Page Fault Rate = {0}".format(str(truncate(virtual_mem.page_fault / len(entries),3))))
+        # file3.write("Page Fault Rate = {0}".format(str(truncate(virtual_mem.page_fault / len(entries),3))))
+        file3.write("Page Fault Rate = %.3f" % (virtual_mem.page_fault / len(entries)))
         file3.write("\n")
         file3.write("TLB Hits = {0}".format(str(len(entries) - virtual_mem.tlb_fault)))
         file3.write("\n")
         file3.write("TLB Misses = {0}".format(str(virtual_mem.tlb_fault)))
         file3.write("\n")
-        file3.write("TLB Hit Rate = {0}".format(str(truncate(1 - virtual_mem.tlb_fault / len(entries),3))))
-
+        # file3.write("TLB Hit Rate = {0}".format(str(truncate(1 - virtual_mem.tlb_fault / len(entries),3))))
+        file3.write("Page Fault Rate = %.3f" % (1 - virtual_mem.tlb_fault / len(entries)))
 
 
 
