@@ -17,6 +17,7 @@ class FifoMem(BaseVirtualMem):
             if soft_miss:
                 self.tlb_fault += 1
             if hard_miss:
+
                 self.page_fault += 1
 
             byteAtAddress = self.fileContent[int(address)]

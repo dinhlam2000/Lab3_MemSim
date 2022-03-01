@@ -139,7 +139,7 @@ if __name__ == '__main__':
 
 
 
-            file3.write("{0}, {1}, {2}\n".format(value[0],value[1], value[2]))
+            file3.write("{0}, {1}, {2},\n".format(value[0],value[1], value[2]))
 
             file3.write(value[3] + "\n")
         file3.write("Number of Translated Addresses = {0}".format(str(len(entries))))
@@ -154,7 +154,7 @@ if __name__ == '__main__':
         file3.write("TLB Misses = {0}".format(str(virtual_mem.tlb_fault)))
         file3.write("\n")
         # file3.write("TLB Hit Rate = {0}".format(str(truncate(1 - virtual_mem.tlb_fault / len(entries),3))))
-        file3.write("Page Fault Rate = %.3f" % (1 - virtual_mem.tlb_fault / len(entries)))
+        file3.write("TLB Hit Rate = %.3f" % (1 - virtual_mem.tlb_fault / len(entries)))
 
 
 
